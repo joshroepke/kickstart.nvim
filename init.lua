@@ -156,6 +156,12 @@ vim.opt.cursorline = true
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff = 10
 
+-- Tab configuration
+vim.opt.tabstop = 4
+vim.opt.softtabstop = 4
+vim.opt.shiftwidth = 4
+vim.opt.expandtab = false
+
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
@@ -200,6 +206,16 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
   callback = function()
     vim.highlight.on_yank()
+  end,
+})
+
+-- Automatically set filetype for Terraform files
+vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
+  desc = 'Set filetype for Terraform files',
+  group = vim.api.nvim_create_augroup('kickstart-terraform-filetype', { clear = true }),
+  pattern = { '*.tf', '*.tfvars' },
+  callback = function()
+    vim.bo.filetype = 'terraform'
   end,
 })
 
@@ -630,7 +646,7 @@ require('lazy').setup({
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
         -- clangd = {},
-        -- gopls = {},
+        gopls = {}, -- Go Language Server
         -- pyright = {},
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
@@ -640,6 +656,8 @@ require('lazy').setup({
         --
         -- But for many setups, the LSP (`ts_ls`) will work just fine
         -- ts_ls = {},
+        --
+        terraformls = {}, -- Terraform Language Server
         --
 
         lua_ls = {
@@ -686,6 +704,13 @@ require('lazy').setup({
           end,
         },
       }
+      
+      -- Override terraformls configuration to ensure it attaches to Terraform files
+      -- This is redundant with the servers configuration above, but we set it explicitly here
+      -- to ensure it works correctly without restarting Neovim
+      require('lspconfig').terraformls.setup({
+        filetypes = { "terraform", "terraform-vars", "tf" },
+      })
     end,
   },
 
@@ -722,7 +747,9 @@ require('lazy').setup({
         }
       end,
       formatters_by_ft = {
+        go = { 'gofmt', 'goimports' },
         lua = { 'stylua' },
+        terraform = { 'terraform_fmt' },
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
         --
@@ -912,7 +939,7 @@ require('lazy').setup({
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
+      ensure_installed = { 'bash', 'c', 'diff', 'go', 'gomod', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'terraform', 'vim', 'vimdoc' },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
@@ -947,6 +974,12 @@ require('lazy').setup({
   -- require 'kickstart.plugins.autopairs',
   -- require 'kickstart.plugins.neo-tree',
   -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
+  
+  -- Add vim-fugitive for Git integration
+  { 
+    'tpope/vim-fugitive',
+    cmd = { 'Git', 'G', 'Gwrite', 'Gread', 'Gdiff', 'Gvdiff' },
+  },
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --    This is the easiest way to modularize your config.
@@ -979,6 +1012,39 @@ require('lazy').setup({
     },
   },
 })
+
+-- Configure vim-fugitive colors and settings
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = {'fugitive'},
+  callback = function()
+    -- Set different colors for different git status indicators
+    vim.cmd([[
+      hi fugitiveUntrackedHeading guifg=#F46868 ctermfg=Red
+      hi fugitiveUntrackedModifier guifg=#F46868 ctermfg=Red
+      hi fugitiveUnstagedHeading guifg=#F46868 ctermfg=Red
+      hi fugitiveUnstagedModifier guifg=#F46868 ctermfg=Red
+      hi fugitiveStagedHeading guifg=#90EE90 ctermfg=Green
+      hi fugitiveStagedModifier guifg=#90EE90 ctermfg=Green
+      hi fugitiveHeading guifg=#94e2d5 ctermfg=Cyan gui=bold cterm=bold
+      hi fugitiveHeader guifg=#94e2d5 ctermfg=Cyan gui=bold cterm=bold
+    ]])
+    
+    -- Enable termguicolors if available
+    if vim.fn.has('termguicolors') == 1 then
+      vim.opt_local.termguicolors = true
+    end
+  end
+})
+
+-- Add convenient keymaps for common Git operations
+vim.keymap.set('n', '<leader>gs', ':Git<CR>', { desc = 'Git [S]tatus' })
+vim.keymap.set('n', '<leader>ga', ':Git add .<CR>', { desc = 'Git [A]dd all' })
+vim.keymap.set('n', '<leader>gaf', ':Gwrite<CR>', { desc = 'Git [A]dd current [F]ile' })
+vim.keymap.set('n', '<leader>gc', ':Git commit<CR>', { desc = 'Git [C]ommit' })
+vim.keymap.set('n', '<leader>gp', ':Git push<CR>', { desc = 'Git [P]ush' })
+vim.keymap.set('n', '<leader>gb', ':Git blame<CR>', { desc = 'Git [B]lame' })
+vim.keymap.set('n', '<leader>gl', ':Git log<CR>', { desc = 'Git [L]og' })
+vim.keymap.set('n', '<leader>gd', ':Gdiff<CR>', { desc = 'Git [D]iff' })
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et

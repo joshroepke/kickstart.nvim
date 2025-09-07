@@ -24,16 +24,24 @@ If you are experiencing issues, please make sure you have the latest versions.
 External Requirements:
 - Basic utils: `git`, `make`, `unzip`, C Compiler (`gcc`)
 - [ripgrep](https://github.com/BurntSushi/ripgrep#installation)
-- Clipboard tool (xclip/xsel/win32yank or other depending on the platform)
+- Clipboard tool (xclip/xsel or other depending on the platform)
 - A [Nerd Font](https://www.nerdfonts.com/): optional, provides various icons
   - if you have it set `vim.g.have_nerd_font` in `init.lua` to true
 - Language Setup:
   - If you want to write Typescript, you need `npm`
-  - If you want to write Golang, you will need `go`
+  - If you want to write Go, you will need:
+    - `go`: The Go programming language
+    - `gopls`: Go language server - automatically installed by Mason
+    - `golangci-lint`: For linting - `brew install golangci-lint` (macOS) or 
+      download from [golangci-lint](https://github.com/golangci/golangci-lint#install)
+  - If you want to write Terraform, you need:
+    - [terraform-ls](https://github.com/hashicorp/terraform-ls): `brew install hashicorp/tap/terraform-ls` (macOS)
+      or download from [releases](https://releases.hashicorp.com/terraform-ls/)
+    - [tflint](https://github.com/terraform-linters/tflint): `brew install tflint` (macOS)
   - etc.
 
 > **NOTE**
-> See [Install Recipes](#Install-Recipes) for additional Windows and Linux specific notes
+> See [Install Recipes](#Install-Recipes) for additional Linux specific notes
 > and quick install snippets
 
 ### Install Kickstart
@@ -46,8 +54,6 @@ Neovim's configurations are located under the following paths, depending on your
 | OS | PATH |
 | :- | :--- |
 | Linux, MacOS | `$XDG_CONFIG_HOME/nvim`, `~/.config/nvim` |
-| Windows (cmd)| `%localappdata%\nvim\` |
-| Windows (powershell)| `$env:LOCALAPPDATA\nvim\` |
 
 #### Recommended Step
 
@@ -66,31 +72,11 @@ too - it's ignored in the kickstart repo to make maintenance easier, but it's
 #### Clone kickstart.nvim
 > **NOTE**
 > If following the recommended step above (i.e., forking the repo), replace
-> `nvim-lua` with `<your_github_username>` in the commands below
-
-<details><summary> Linux and Mac </summary>
+> `nvim-lua` with `<your_github_username>` in the command below
 
 ```sh
 git clone https://github.com/nvim-lua/kickstart.nvim.git "${XDG_CONFIG_HOME:-$HOME/.config}"/nvim
 ```
-
-</details>
-
-<details><summary> Windows </summary>
-
-If you're using `cmd.exe`:
-
-```
-git clone https://github.com/nvim-lua/kickstart.nvim.git "%localappdata%\nvim"
-```
-
-If you're using `powershell.exe`
-
-```
-git clone https://github.com/nvim-lua/kickstart.nvim.git "${env:LOCALAPPDATA}\nvim"
-```
-
-</details>
 
 ### Post Installation
 
@@ -152,49 +138,6 @@ examples of adding popularly requested plugins.
 Below you can find OS specific install instructions for Neovim and dependencies.
 
 After installing all the dependencies continue with the [Install Kickstart](#Install-Kickstart) step.
-
-#### Windows Installation
-
-<details><summary>Windows with Microsoft C++ Build Tools and CMake</summary>
-Installation may require installing build tools and updating the run command for `telescope-fzf-native`
-
-See `telescope-fzf-native` documentation for [more details](https://github.com/nvim-telescope/telescope-fzf-native.nvim#installation)
-
-This requires:
-
-- Install CMake and the Microsoft C++ Build Tools on Windows
-
-```lua
-{'nvim-telescope/telescope-fzf-native.nvim', build = 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build' }
-```
-</details>
-<details><summary>Windows with gcc/make using chocolatey</summary>
-Alternatively, one can install gcc and make which don't require changing the config,
-the easiest way is to use choco:
-
-1. install [chocolatey](https://chocolatey.org/install)
-either follow the instructions on the page or use winget,
-run in cmd as **admin**:
-```
-winget install --accept-source-agreements chocolatey.chocolatey
-```
-
-2. install all requirements using choco, exit the previous cmd and
-open a new one so that choco path is set, and run in cmd as **admin**:
-```
-choco install -y neovim git ripgrep wget fd unzip gzip mingw make
-```
-</details>
-<details><summary>WSL (Windows Subsystem for Linux)</summary>
-
-```
-wsl --install
-wsl
-sudo add-apt-repository ppa:neovim-ppa/unstable -y
-sudo apt update
-sudo apt install make gcc ripgrep unzip git xclip neovim
-```
-</details>
 
 #### Linux Install
 <details><summary>Ubuntu Install Steps</summary>
