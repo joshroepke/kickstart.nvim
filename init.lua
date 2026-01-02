@@ -646,9 +646,10 @@ require('lazy').setup({
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
         -- clangd = {},
+        dockerls = {}, -- Docker Language Server
         gopls = {}, -- Go Language Server
-        -- pyright = {},
-        -- rust_analyzer = {},
+        pyright = {}, -- Python Language Server
+        rust_analyzer = {}, -- Rust Language Server
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
@@ -704,13 +705,13 @@ require('lazy').setup({
           end,
         },
       }
-      
+
       -- Override terraformls configuration to ensure it attaches to Terraform files
       -- This is redundant with the servers configuration above, but we set it explicitly here
       -- to ensure it works correctly without restarting Neovim
-      require('lspconfig').terraformls.setup({
-        filetypes = { "terraform", "terraform-vars", "tf" },
-      })
+      require('lspconfig').terraformls.setup {
+        filetypes = { 'terraform', 'terraform-vars', 'tf' },
+      }
     end,
   },
 
@@ -974,9 +975,9 @@ require('lazy').setup({
   -- require 'kickstart.plugins.autopairs',
   -- require 'kickstart.plugins.neo-tree',
   -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
-  
+
   -- Add vim-fugitive for Git integration
-  { 
+  {
     'tpope/vim-fugitive',
     cmd = { 'Git', 'G', 'Gwrite', 'Gread', 'Gdiff', 'Gvdiff' },
   },
@@ -1015,10 +1016,10 @@ require('lazy').setup({
 
 -- Configure vim-fugitive colors and settings
 vim.api.nvim_create_autocmd('FileType', {
-  pattern = {'fugitive'},
+  pattern = { 'fugitive' },
   callback = function()
     -- Set different colors for different git status indicators
-    vim.cmd([[
+    vim.cmd [[
       hi fugitiveUntrackedHeading guifg=#F46868 ctermfg=Red
       hi fugitiveUntrackedModifier guifg=#F46868 ctermfg=Red
       hi fugitiveUnstagedHeading guifg=#F46868 ctermfg=Red
@@ -1027,13 +1028,13 @@ vim.api.nvim_create_autocmd('FileType', {
       hi fugitiveStagedModifier guifg=#90EE90 ctermfg=Green
       hi fugitiveHeading guifg=#94e2d5 ctermfg=Cyan gui=bold cterm=bold
       hi fugitiveHeader guifg=#94e2d5 ctermfg=Cyan gui=bold cterm=bold
-    ]])
-    
+    ]]
+
     -- Enable termguicolors if available
-    if vim.fn.has('termguicolors') == 1 then
+    if vim.fn.has 'termguicolors' == 1 then
       vim.opt_local.termguicolors = true
     end
-  end
+  end,
 })
 
 -- Add convenient keymaps for common Git operations
