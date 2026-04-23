@@ -219,6 +219,16 @@ vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
   end,
 })
 
+-- Automatically set filetype for Helm template files
+vim.api.nvim_create_autocmd({ 'BufRead', 'BufNewFile' }, {
+  desc = 'Set filetype for Helm template files',
+  group = vim.api.nvim_create_augroup('kickstart-helm-filetype', { clear = true }),
+  pattern = { '*/templates/*.yaml', '*/templates/*.tpl', '*/templates/*.yml' },
+  callback = function()
+    vim.bo.filetype = 'helm'
+  end,
+})
+
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
@@ -980,6 +990,12 @@ require('lazy').setup({
   {
     'tpope/vim-fugitive',
     cmd = { 'Git', 'G', 'Gwrite', 'Gread', 'Gdiff', 'Gvdiff' },
+  },
+
+  -- Add vim-helm for Helm template syntax highlighting
+  {
+    'towolf/vim-helm',
+    ft = 'helm',
   },
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
