@@ -703,6 +703,11 @@ require('lazy').setup({
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
+      -- Suppress lspconfig deprecation warnings (we'll migrate to vim.lsp.config later)
+      local lspconfig = require('lspconfig')
+      local deprecate = vim.deprecate
+      vim.deprecate = function() end -- Disable deprecation warnings for lspconfig usage
+
       require('mason-lspconfig').setup {
         handlers = {
           function(server_name)
@@ -711,7 +716,7 @@ require('lazy').setup({
             -- by the server configuration above. Useful when disabling
             -- certain features of an LSP (for example, turning off formatting for ts_ls)
             server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-            require('lspconfig')[server_name].setup(server)
+            lspconfig[server_name].setup(server)
           end,
         },
       }
@@ -719,9 +724,11 @@ require('lazy').setup({
       -- Override terraformls configuration to ensure it attaches to Terraform files
       -- This is redundant with the servers configuration above, but we set it explicitly here
       -- to ensure it works correctly without restarting Neovim
-      require('lspconfig').terraformls.setup {
+      lspconfig.terraformls.setup {
         filetypes = { 'terraform', 'terraform-vars', 'tf' },
       }
+
+      vim.deprecate = deprecate -- Re-enable deprecation warnings
     end,
   },
 
