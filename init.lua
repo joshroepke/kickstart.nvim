@@ -660,13 +660,13 @@ require('lazy').setup({
         gopls = {}, -- Go Language Server
         pyright = {}, -- Python Language Server
         rust_analyzer = {}, -- Rust Language Server
+        ts_ls = {}, -- TypeScript Language Server (for Pulumi/TypeScript projects)
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
         --    https://github.com/pmizio/typescript-tools.nvim
         --
         -- But for many setups, the LSP (`ts_ls`) will work just fine
-        -- ts_ls = {},
         --
         terraformls = {}, -- Terraform Language Server
         --
@@ -768,11 +768,12 @@ require('lazy').setup({
         go = { 'gofmt', 'goimports' },
         lua = { 'stylua' },
         terraform = { 'terraform_fmt' },
+        typescript = { 'prettierd', 'prettier', stop_after_first = true },
+        javascript = { 'prettierd', 'prettier', stop_after_first = true },
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
         --
         -- You can use 'stop_after_first' to run the first available formatter from the list
-        -- javascript = { "prettierd", "prettier", stop_after_first = true },
       },
     },
   },
@@ -957,7 +958,7 @@ require('lazy').setup({
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'go', 'gomod', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'terraform', 'vim', 'vimdoc' },
+      ensure_installed = { 'bash', 'c', 'diff', 'go', 'gomod', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'terraform', 'typescript', 'tsx', 'vim', 'vimdoc' },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
